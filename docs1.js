@@ -74,6 +74,32 @@ const MODULI_PREPOSTO = [
 ];
 
 // ═══════════════════════════════════════════════════════════════
+// CONTENUTI DELL'AGGIORNAMENTO PREPOSTO (ASR 17/04/2025 – Parte III, §1 e §1.2)
+// NON è la struttura dei 4 moduli BASE: l'aggiornamento (durata minima 6h) è
+// tematico e legato all'evoluzione dei rischi/contesto. Blocchi senza "ore".
+// ═══════════════════════════════════════════════════════════════
+const CONTENUTI_AGGIORNAMENTO_PREPOSTO = [
+  {
+    titolo: 'CONTENUTI COMUNI DELL\'AGGIORNAMENTO (ASR 17/04/2025, Parte III, punto 1)',
+    contenuti: [
+      'Significative evoluzioni e innovazioni, applicazioni pratiche e/o approfondimenti su modifiche normative',
+      'Aggiornamenti tecnici sui rischi ai quali sono esposti i lavoratori',
+      'Aggiornamenti su organizzazione e gestione della sicurezza in azienda',
+      'Fonti di rischio e relative misure di prevenzione',
+    ],
+  },
+  {
+    titolo: 'AGGIORNAMENTO SPECIFICO PER IL PREPOSTO (ASR 17/04/2025, Parte III, punto 1.2)',
+    contenuti: [
+      'Cambiamenti del contesto operativo: cambiamenti del reparto, modifiche dei processi produttivi e organizzativi',
+      'Misure tecniche, organizzative e procedurali di prevenzione e protezione adottate a seguito della valutazione dei rischi dell\'azienda',
+      'Cambiamenti del contesto in cui il preposto esercita le funzioni di cui all\'art. 19 del D.Lgs. 81/2008 in relazione alle misure adottate',
+      'Evoluzione dei rischi e insorgenza di nuovi rischi che rendono necessario l\'aggiornamento, in relazione ai propri compiti in materia di salute e sicurezza del lavoro',
+    ],
+  },
+];
+
+// ═══════════════════════════════════════════════════════════════
 // 1. PROGETTO FORMATIVO — layout ricco con banda hero
 // ═══════════════════════════════════════════════════════════════
 async function genProgettoFormativo() {
@@ -201,19 +227,8 @@ async function genProgettoFormativo() {
     titoloSezione('6. STRUTTURA DEL CORSO'),
     ...moduliFormativi(isBase),
 
-    // ── 6.1 AGGIORNAMENTO ──
-    titoloSezione('6.1 AGGIORNAMENTO'),
-    new Paragraph({ alignment: AlignmentType.JUSTIFIED,
-      children: [new TextRun({ text: 'Durata: 6 ore ogni 2 anni (Accordo Stato-Regioni 17/04/2025, Parte III).',
-        font: FONT, size: 20, bold: true, color: C.ROSSO })],
-    }),
-    vuoto(10),
-    para('Modalità: colloquio individuale o test scritto a risposta multipla.'),
-    vuoto(10),
-    para('Contenuti:'),
-    para('• aggiornamento sui rischi specifici', { spacing: { before: 4, after: 4 } }),
-    para('• nuove normative', { spacing: { before: 4, after: 4 } }),
-    para('• cambiamenti organizzativi/produttivi.', { spacing: { before: 4, after: 4 } }),
+    // ── 6.1 (mode-aware) ──
+    ...blocco61(isBase),
 
     // ── 7. VERIFICA DI EFFICACIA ──
     // (no page break esplicito: §6.1 è breve, §7 attacca subito dopo;
@@ -319,14 +334,15 @@ function tabellaDatiCorso(isBase, oreTotali) {
 function moduliFormativi(isBase) {
   const result = [];
   vuoto(10);
-  const moduli = MODULI_PREPOSTO; // i moduli base; per AGGIORNAMENTO lasciamo gli stessi titoli (struttura identica, contenuti aggiornati)
+  // BASE → 4 moduli (12h, ASR Parte II §2.2). AGGIORNAMENTO → contenuti tematici (6h, ASR Parte III §1/§1.2).
+  const moduli = isBase ? MODULI_PREPOSTO : CONTENUTI_AGGIORNAMENTO_PREPOSTO;
   moduli.forEach((m, idx) => {
     if (idx > 0) result.push(vuoto(10));
     // Titolo modulo in rosso C00000
     result.push(new Paragraph({
       alignment: AlignmentType.JUSTIFIED,
       children: [new TextRun({
-        text: `${m.titolo} (${m.ore} ore)`, font: FONT, size: 20, bold: true, color: C.ROSSO,
+        text: m.ore ? `${m.titolo} (${m.ore} ore)` : m.titolo, font: FONT, size: 20, bold: true, color: C.ROSSO,
       })],
     }));
     m.contenuti.forEach(c => result.push(new Paragraph({
@@ -336,6 +352,36 @@ function moduliFormativi(isBase) {
     })));
   });
   return result;
+}
+
+// §6.1 mode-aware: BASE → preavviso obbligo di aggiornamento biennale;
+//                  AGGIORNAMENTO → periodicità e modalità di erogazione (ASR Parte III §1.2 + Parte IV §6.3).
+function blocco61(isBase) {
+  if (isBase) {
+    return [
+      titoloSezione('6.1 AGGIORNAMENTO'),
+      new Paragraph({ alignment: AlignmentType.JUSTIFIED,
+        children: [new TextRun({ text: 'Durata: 6 ore ogni 2 anni (Accordo Stato-Regioni 17/04/2025, Parte III).',
+          font: FONT, size: 20, bold: true, color: C.ROSSO })] }),
+      vuoto(10),
+      para('Modalità: colloquio individuale o test scritto a risposta multipla.'),
+      vuoto(10),
+      para('Contenuti:'),
+      para('• aggiornamento sui rischi specifici', { spacing: { before: 4, after: 4 } }),
+      para('• nuove normative', { spacing: { before: 4, after: 4 } }),
+      para('• cambiamenti organizzativi/produttivi.', { spacing: { before: 4, after: 4 } }),
+    ];
+  }
+  return [
+    titoloSezione('6.1 PERIODICITÀ E MODALITÀ DI EROGAZIONE'),
+    new Paragraph({ alignment: AlignmentType.JUSTIFIED,
+      children: [new TextRun({ text: 'Durata minima 6 ore, con cadenza biennale e comunque ogni qualvolta sia reso necessario in ragione dell\'evoluzione dei rischi o all\'insorgenza di nuovi rischi (ASR 17/04/2025, Parte III, punto 1.2).',
+        font: FONT, size: 20, bold: true, color: C.ROSSO })] }),
+    vuoto(10),
+    para('Modalità di erogazione: in presenza oppure in videoconferenza sincrona. Per l\'aggiornamento del preposto NON è ammessa la modalità e-learning.'),
+    vuoto(10),
+    para('Verifica finale dell\'apprendimento: test a risposta multipla oppure colloquio individuale (ASR 17/04/2025, Parte IV, punto 6.3).'),
+  ];
 }
 
 function tabellaSoggettoFormatore() {
