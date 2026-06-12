@@ -28,6 +28,8 @@ function docenteDescr() {
     ? `${CLIENTE.formatoreEsterno.trim()} – Formatore qualificato ai sensi del D.I. 06/03/2013`
     : `${CLIENTE.datoreLavoro} – Datore di Lavoro e RSPP`;
 }
+// Solo nome/i del docente (per il campo "Relatore / Docente" del Registro).
+function docenteNome() { return isFormExt() ? CLIENTE.formatoreEsterno.trim() : CLIENTE.datoreLavoro; }
 
 // ═══════════════════════════════════════════════════════════════
 // CONTENUTI NORMATIVI DEI 4 MODULI (ASR 17/04/2025 – Parte II, §2.2)
@@ -608,7 +610,7 @@ async function genRegistroPresenze(tipo /* 'INIZIALE' | 'AGGIORNAMENTO' */) {
           margins: { top: 60, bottom: 60, left: 120, right: 120 },
           children: [new Paragraph({ children: [
             new TextRun({ text: 'Relatore / Docente: ', font: FONT, size: 20, bold: true }),
-            new TextRun({ text: CLIENTE.datoreLavoro, font: FONT, size: 20 }),
+            new TextRun({ text: docenteNome(), font: FONT, size: 20 }),
           ]})],
         }),
         new TableCell({ width: { size: wB, type: WidthType.DXA }, verticalAlign: VerticalAlign.CENTER,
