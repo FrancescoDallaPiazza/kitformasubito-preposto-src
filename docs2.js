@@ -19,6 +19,12 @@ const {
   indirizzoCompleto, codiceFiscaleEffettivo,
 } = require('./helpers');
 
+// ── DOCENZA (STEP 1 della skill) ──────────────────────────────────────────────
+// formatoreEsterno valorizzato → docente esterno qualificato ex D.I. 06/03/2013;
+// vuoto → docenza del Datore di Lavoro che svolge il ruolo di RSPP (default).
+function isFormExt() { return !!(CLIENTE.formatoreEsterno && CLIENTE.formatoreEsterno.trim()); }
+function firmaRelatoreLabel() { return isFormExt() ? 'Firma del Relatore / Docente' : 'Firma del Relatore / Datore di Lavoro / RSPP'; }
+
 // ═══════════════════════════════════════════════════════════════
 // 4. ATTESTATO
 // ═══════════════════════════════════════════════════════════════
@@ -102,7 +108,7 @@ async function genAttestato(tipo /* 'INIZIALE' | 'AGGIORNAMENTO' */) {
         }),
         new TableCell({ width: { size: wF, type: WidthType.DXA },
           margins: { top: 60, bottom: 60, left: 120, right: 120 },
-          children: [new Paragraph({ children: [new TextRun({ text: 'Firma del Relatore / Datore di Lavoro / RSPP', font: FONT, size: 20, bold: true })] })],
+          children: [new Paragraph({ children: [new TextRun({ text: firmaRelatoreLabel(), font: FONT, size: 20, bold: true })] })],
         }),
       ]}),
       new TableRow({
@@ -202,7 +208,7 @@ async function genVerbaleVerifica() {
       ]}),
       new TableRow({ children: [
         celEtichetta('Soggetto Formatore / Docente', { width: wL1 }),
-        celValore(`${CLIENTE.datoreLavoro} – Datore di Lavoro / RSPP`, { width: wR1 }),
+        celValore('Per la ditta', { width: wR1 }),
       ]}),
     ],
   });

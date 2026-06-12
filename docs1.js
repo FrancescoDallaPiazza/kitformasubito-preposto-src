@@ -19,6 +19,16 @@ const {
   logoBytes, LOGO_TYPE,
 } = require('./helpers');
 
+// ── DOCENZA (STEP 1 della skill) ──────────────────────────────────────────────
+// formatoreEsterno valorizzato → docente esterno qualificato ex D.I. 06/03/2013;
+// vuoto → docenza del Datore di Lavoro che svolge il ruolo di RSPP (default).
+function isFormExt() { return !!(CLIENTE.formatoreEsterno && CLIENTE.formatoreEsterno.trim()); }
+function docenteDescr() {
+  return isFormExt()
+    ? `${CLIENTE.formatoreEsterno.trim()} – Formatore qualificato ai sensi del D.I. 06/03/2013`
+    : `${CLIENTE.datoreLavoro} – Datore di Lavoro e RSPP`;
+}
+
 // ═══════════════════════════════════════════════════════════════
 // CONTENUTI NORMATIVI DEI 4 MODULI (ASR 17/04/2025 – Parte II, §2.2)
 // ═══════════════════════════════════════════════════════════════
@@ -354,11 +364,13 @@ function tabellaSoggettoDocente() {
     rows: [
       new TableRow({ children: [
         celEtichetta('Soggetto relatore / docente', { width: wL }),
-        celValore(`${CLIENTE.datoreLavoro} – Datore di Lavoro e RSPP`, { width: wR }),
+        celValore(docenteDescr(), { width: wR }),
       ]}),
       new TableRow({ children: [
         celEtichetta('Base normativa docente', { width: wL }),
-        celValore('ASR 17/04/2025, Punto 2 – Parte II (deroga per Datore di Lavoro RSPP)', { width: wR }),
+        celValore(isFormExt()
+          ? 'ASR 17/04/2025, Punto 2 – Parte II e D.I. 06/03/2013 (qualificazione del formatore esterno)'
+          : 'ASR 17/04/2025, Punto 2 – Parte II (deroga per Datore di Lavoro RSPP)', { width: wR }),
       ]}),
     ],
   });

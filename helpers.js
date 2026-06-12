@@ -50,6 +50,10 @@ const CLIENTE = {
   atecoDesc:           'Descrizione attività',
   datoreLavoro:        'Nome Cognome',
   anno:                '2026',
+  // Docenza: '' = erogata dal Datore di Lavoro che svolge il ruolo di RSPP (default).
+  // Se valorizzato (es. 'Mario Rossi' o 'Mario Rossi, Luigi Bianchi') = docente/i
+  // esterno/i qualificato/i ai sensi del D.I. 06/03/2013 (popolato allo STEP 1).
+  formatoreEsterno:    '',
 };
 
 // ═══════════════════════════════════════════════════════════════
