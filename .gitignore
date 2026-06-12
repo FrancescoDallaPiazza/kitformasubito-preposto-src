@@ -1,0 +1,5 @@
+logo.png
+OUT/
+node_modules/
+*.log
+.DS_Store

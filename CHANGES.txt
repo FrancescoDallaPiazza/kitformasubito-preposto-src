@@ -1,0 +1,16 @@
+MIGRAZIONE A REPO GITHUB + NOTA REGIONALE IN RIFERIMENTO NORMATIVO — kitformasubito-preposto-src
+
+Contesto: gli script del preposto erano bundled dentro la .skill. Migrati su questo
+repo per allinearli a kitformasubito-src (fix di codice via push, senza ri-package).
+
+Modifica funzionale inclusa (v3.7 della skill):
+- docs1.js: la nota normativa regionale (blocco REGIONALE = enabled/regione/testoNota
+  in helpers.js) viene iniettata in coda alla sezione "3. RIFERIMENTO NORMATIVO" del
+  Progetto Formativo, con titolo "Disposizioni regionali (<regione>)" in grassetto blu
+  (BLU_HEADER) + testo nota giustificato. Prima era iniettata dopo la PREMESSA.
+- helpers.js: aggiunto campo "regione" al blocco REGIONALE (oltre a enabled/testoNota).
+  Guardia difensiva: se enabled=false (default) nessuna nota viene aggiunta.
+
+Regole repo:
+- Pushare solo file strutturali (docs1.js, docs2.js, gen_test.js, run.js).
+- NON pushare helpers.js con dati di un cliente reale.
