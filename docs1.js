@@ -176,7 +176,7 @@ async function genProgettoFormativo() {
     // ── 3. RIFERIMENTO NORMATIVO ──
     titoloSezione('3. RIFERIMENTO NORMATIVO'),
     new Paragraph({ alignment: AlignmentType.JUSTIFIED,
-      children: [new TextRun({ text: "Accordo Stato-Regioni del 17 aprile 2025 – Parte II, Punto 2 e Parte IV, Punto 1",
+      children: [new TextRun({ text: "Accordo Stato-Regioni del 17 aprile 2025 – Parte II, Punto 2 e Parte IV, Punto 1 – D.I. 06/03/2013 (qualificazione del formatore)",
         font: FONT, size: 22, bold: true, color: C.BLU_HEADER })],
     }),
     vuoto(20),
@@ -184,7 +184,7 @@ async function genProgettoFormativo() {
       children: [
         new TextRun({ text: "Parte II dell'Accordo – Punto 2", font: FONT, size: 20, underline: { type: 'single' }, color: '000000' }),
         new TextRun({ text: ': ', font: FONT, size: 20, color: '000000' }),
-        new TextRun({ text: "i datori di lavoro possono organizzare direttamente i corsi di formazione ex art. 37, comma 2, del D.Lgs. n. 81/2008 nei confronti dei propri lavoratori, preposti e dirigenti, a condizione che venga rispettato quanto previsto dal presente Accordo.",
+        new TextRun({ text: "i datori di lavoro possono organizzare direttamente i corsi di formazione ex art. 37, comma 2, del D.Lgs. n. 81/2008 nei confronti dei propri lavoratori, preposti e dirigenti, a condizione che venga rispettato quanto previsto dall'Accordo Stato-Regioni 17/04/2025. In questo caso il datore di lavoro riveste il ruolo di soggetto formatore, cui spettano gli adempimenti previsti dall'Accordo.",
           font: FONT, size: 20, italics: true, color: '000000' }),
       ],
     }),
@@ -193,6 +193,12 @@ async function genProgettoFormativo() {
       children: [new TextRun({
         text: "Il datore di lavoro in possesso dei requisiti per lo svolgimento diretto dei compiti del servizio di prevenzione e protezione di cui all'articolo 34 del D.Lgs. n. 81/2008, può svolgere anche in qualità di docente, esclusivamente nei riguardi dei propri lavoratori, preposti e dirigenti, le attività di formazione previste dall'articolo 37 del medesimo decreto.",
         font: FONT, size: 20, italics: true, color: '000000' })],
+    }),
+    vuoto(20),
+    new Paragraph({ alignment: AlignmentType.JUSTIFIED,
+      children: [new TextRun({
+        text: "Qualora il Datore di Lavoro, pur agendo quale soggetto organizzatore del corso, non svolga personalmente la docenza — ovvero non sia in possesso dei requisiti di cui all'art. 34 del D.Lgs. 81/2008 — la formazione è affidata a formatori-docenti in possesso della qualificazione prevista dal Decreto Interministeriale 06/03/2013, che individua i criteri di qualificazione del formatore in materia di salute e sicurezza sul lavoro.",
+        font: FONT, size: 20, color: '000000' })],
     }),
     vuoto(20),
     new Paragraph({ alignment: AlignmentType.JUSTIFIED,
