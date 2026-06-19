@@ -15,6 +15,7 @@ const {
   genVerbaleVerifica,
   genVerificaEfficacia,
   genQuestionarioGradimento,
+  genColloquioPreposto,
 } = require('./docs2');
 const {
   genTestDiscente,
@@ -29,15 +30,19 @@ async function main() {
   console.log(`Tipo corso: ${CORSO.tipoCorso} (${CORSO.oreCorso} ore)`);
   console.log('═══════════════════════════════════════════════════════════════\n');
 
-  // Verifica conteggio domande
-  const domande = costruisciDomande();
-  const minRichiesto = CORSO.tipoCorso === 'BASE' ? 30 : 10;
-  if (domande.length < minRichiesto) {
-    console.error(`❌ ERRORE: il test ha solo ${domande.length} domande, ma ASR 17/04/2025 richiede almeno ${minRichiesto} per ${CORSO.tipoCorso}.`);
-    console.error(`   Verifica gen_test.js (domandeGeneraliste) e rilancia.`);
-    process.exit(1);
+  // Verifica conteggio domande — solo per il corso BASE (l'aggiornamento usa il colloquio)
+  if (CORSO.tipoCorso === 'BASE') {
+    const domande = costruisciDomande();
+    const minRichiesto = 30;
+    if (domande.length < minRichiesto) {
+      console.error(`❌ ERRORE: il test ha solo ${domande.length} domande, ma ASR 17/04/2025 richiede almeno ${minRichiesto} per ${CORSO.tipoCorso}.`);
+      console.error(`   Verifica gen_test.js (domandeGeneraliste) e rilancia.`);
+      process.exit(1);
+    }
+    console.log(`✅ Test: ${domande.length} domande totali (minimo ASR: ${minRichiesto})\n`);
+  } else {
+    console.log(`ℹ️  Modalità AGGIORNAMENTO: verifica finale tramite COLLOQUIO orale verbalizzato (no test scritto)\n`);
   }
-  console.log(`✅ Test: ${domande.length} domande totali (minimo ASR: ${minRichiesto})\n`);
 
   ensureDir(KIT_DIR);
 
@@ -52,9 +57,15 @@ async function main() {
     await genRegistroPresenze('AGGIORNAMENTO');
   }
 
-  // Test
-  await genTestDiscente();
-  await genTestDocente();
+  // Verifica finale dell'apprendimento:
+  //  - BASE 12h        → Test scritto a risposta multipla (discente + docente)
+  //  - AGGIORNAMENTO 6h → Colloquio orale verbalizzato (ASR Parte IV §6.3: test OPPURE colloquio)
+  if (CORSO.tipoCorso === 'BASE') {
+    await genTestDiscente();
+    await genTestDocente();
+  } else {
+    await genColloquioPreposto();
+  }
 
   // Questionario gradimento
   await genQuestionarioGradimento();

@@ -628,9 +628,147 @@ async function genQuestionarioGradimento() {
   return salvaDoc(doc, '04 - QUESTIONARIO GRADIMENTO', 'Questionario_Gradimento_Preposto.docx');
 }
 
+// ═══════════════════════════════════════════════════════════════
+// 8. COLLOQUIO DI APPRENDIMENTO (solo AGGIORNAMENTO)
+// ───────────────────────────────────────────────────────────────
+// L'aggiornamento del preposto NON usa il test scritto a risposta
+// multipla: la verifica di apprendimento è un COLLOQUIO orale
+// verbalizzato condotto dal docente al termine delle 6 ore
+// (ASR 17/04/2025 Parte III §1.2 + Parte IV §6.3 — test OPPURE colloquio).
+// Corso generalista → un UNICO colloquio generico (nome del preposto
+// a segnaposto, compilato dal datore di lavoro), come l'Attestato.
+// Il template NON contiene domande pre-stampate: le formula il docente
+// in aula, calibrate sui contenuti dell'aggiornamento e sulle funzioni
+// art. 19. Nessun campo domandeColloquio in helpers.js.
+// ═══════════════════════════════════════════════════════════════
+function docenteColloquioNome()     { return isFormExt() ? CLIENTE.formatoreEsterno : CLIENTE.datoreLavoro; }
+function docenteColloquioQualifica(){ return isFormExt() ? 'Formatore qualificato ex D.I. 06/03/2013' : 'Datore di Lavoro / RSPP (art. 34 D.Lgs. 81/08)'; }
+
+async function genColloquioPreposto() {
+  const wL = 3373, wR = W - wL;
+
+  // KV table coerente con gli altri documenti del KIT preposto
+  const kvTable = (righe) => new Table({
+    width: { size: W, type: WidthType.DXA },
+    columnWidths: [wL, wR],
+    borders: bordoLight(),
+    rows: righe.map(([k, v]) => new TableRow({ children: [
+      celEtichetta(k, { width: wL }),
+      celValore(v, { width: wR }),
+    ]})),
+  });
+
+  const CHECK = (txt) => new Paragraph({
+    spacing: { before: 60, after: 60 },
+    children: [new TextRun({ text: `☐  ${txt}`, font: FONT, size: 20, color: '000000' })],
+  });
+
+  // Tabella firme (2 col) — stesso stile del Verbale/Attestato
+  const wF = Math.floor(W / 2);
+  const tabellaFirme = new Table({
+    width: { size: W, type: WidthType.DXA },
+    columnWidths: [wF, wF],
+    borders: bordiNormali(),
+    rows: [
+      new TableRow({ children: [
+        new TableCell({ width: { size: wF, type: WidthType.DXA },
+          margins: { top: 60, bottom: 60, left: 120, right: 120 },
+          children: [new Paragraph({ children: [new TextRun({ text: firmaRelatoreLabel(), font: FONT, size: 20, bold: true })] })],
+        }),
+        new TableCell({ width: { size: wF, type: WidthType.DXA },
+          margins: { top: 60, bottom: 60, left: 120, right: 120 },
+          children: [new Paragraph({ children: [new TextRun({ text: 'Firma del Preposto', font: FONT, size: 20, bold: true })] })],
+        }),
+      ]}),
+      new TableRow({
+        height: { value: 700, rule: 'exact' },
+        children: [
+          new TableCell({ width: { size: wF, type: WidthType.DXA }, children: [new Paragraph({ children: [new TextRun({ text: ' ', font: FONT, size: 40 })] })] }),
+          new TableCell({ width: { size: wF, type: WidthType.DXA }, children: [new Paragraph({ children: [new TextRun({ text: ' ', font: FONT, size: 40 })] })] }),
+        ],
+      }),
+    ],
+  });
+
+  const children = [
+    new Paragraph({
+      alignment: AlignmentType.CENTER, spacing: { before: 120, after: 40 },
+      children: [new TextRun({ text: 'VERBALE DI COLLOQUIO INDIVIDUALE', font: FONT, size: 32, bold: true, color: C.BLU_DARK })],
+    }),
+    new Paragraph({
+      alignment: AlignmentType.CENTER, spacing: { after: 40 },
+      children: [new TextRun({ text: 'Verifica finale dell\u2019apprendimento \u2013 Aggiornamento Preposto', font: FONT, size: 22, bold: true, color: C.BLU_HEADER })],
+    }),
+    new Paragraph({
+      alignment: AlignmentType.CENTER, spacing: { after: 120 },
+      children: [new TextRun({ text: 'Redatto ai sensi dell\u2019ASR 17/04/2025, Parte IV, punto 6.3 (verifica mediante colloquio individuale).', font: FONT, size: 18, italics: true, color: C.GRIGIO })],
+    }),
+
+    titoloSezioneVerbale('1. DATI DEL SOGGETTO FORMATORE'),
+    kvTable([
+      ['Denominazione', CLIENTE.ragioneSociale],
+      ['Docente', docenteColloquioNome()],
+      ['Qualifica', docenteColloquioQualifica()],
+    ]),
+    vuoto(20),
+
+    titoloSezioneVerbale('2. DATI DEL CORSO DI AGGIORNAMENTO'),
+    kvTable([
+      ['Modalit\u00e0', '\u2610 In presenza      \u2610 Videoconferenza sincrona'],
+      ['Durata', '6 ore (aggiornamento biennale)'],
+      ['Data/e di svolgimento', '___________________________________'],
+    ]),
+    vuoto(20),
+
+    titoloSezioneVerbale('3. DATI DEL PARTECIPANTE'),
+    kvTable([
+      ['Cognome e Nome', '___________________________________'],
+      ['Data di nascita', '___ / ___ / _______'],
+      ['Ruolo', 'PREPOSTO'],
+      ['Reparto / Area di sovrintendenza', '___________________________________'],
+    ]),
+    vuoto(20),
+
+    titoloSezioneVerbale('4. FINALIT\u00c0 E CONTENUTI DELL\u2019AGGIORNAMENTO'),
+    para('Il colloquio verifica l\u2019apprendimento dei contenuti dell\u2019aggiornamento del preposto (ASR 17/04/2025, Parte III, punti 1 e 1.2). Barrare gli ambiti trattati nel colloquio:'),
+    CHECK('Modifiche normative intervenute'),
+    CHECK('Aggiornamenti tecnici sui rischi ai quali sono esposti i lavoratori'),
+    CHECK('Organizzazione e gestione della sicurezza in azienda'),
+    CHECK('Fonti di rischio e relative misure di prevenzione'),
+    CHECK('Cambiamenti del contesto: reparto, processi produttivi e organizzativi'),
+    CHECK('Funzioni del preposto ex art. 19 D.Lgs. 81/08 e misure adottate a seguito della valutazione dei rischi'),
+    new Paragraph({ spacing: { before: 60, after: 60 },
+      children: [new TextRun({ text: '\u2610  Altro: _______________________________________________', font: FONT, size: 20, color: '000000' })] }),
+    vuoto(20),
+
+    titoloSezioneVerbale('5. MODALIT\u00c0 DI CONDUZIONE DEL COLLOQUIO'),
+    new Paragraph({ spacing: { after: 60 },
+      children: [new TextRun({ text: '\u2610  Domande aperte        \u2610  Caso pratico        \u2610  Simulazione        \u2610  Discussione su near miss', font: FONT, size: 20, color: '000000' })] }),
+    vuoto(20),
+
+    titoloSezioneVerbale('6. ESITO DELLA VERIFICA'),
+    new Paragraph({ spacing: { after: 80 },
+      children: [new TextRun({ text: '\u2610  IDONEO            \u2610  NON IDONEO', font: FONT, size: 22, bold: true, color: '000000' })] }),
+    new Paragraph({ spacing: { after: 80 },
+      children: [new TextRun({ text: 'Note del docente: _______________________________________________________', font: FONT, size: 20 })] }),
+    vuoto(40),
+
+    new Paragraph({ spacing: { after: 60 },
+      children: [new TextRun({ text: `Luogo: ${CLIENTE.indirizzo}`, font: FONT, size: 20 })] }),
+    new Paragraph({ spacing: { after: 120 },
+      children: [new TextRun({ text: 'Data: ___ / ___ / _______', font: FONT, size: 20 })] }),
+    vuoto(20),
+    tabellaFirme,
+  ];
+
+  const doc = creaDocStandard(children, 'Colloquio di Apprendimento \u2013 Aggiornamento Preposto');
+  return salvaDoc(doc, '03 - COLLOQUIO DI APPRENDIMENTO', 'Colloquio_Preposto.docx');
+}
+
 module.exports = {
   genAttestato,
   genVerbaleVerifica,
   genVerificaEfficacia,
   genQuestionarioGradimento,
+  genColloquioPreposto,
 };
