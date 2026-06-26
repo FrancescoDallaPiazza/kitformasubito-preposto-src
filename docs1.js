@@ -362,23 +362,14 @@ function moduliFormativi(isBase) {
   return result;
 }
 
-// §6.1 mode-aware: BASE → preavviso obbligo di aggiornamento biennale;
+// §6.1 mode-aware: BASE → nessun blocco (l'aggiornamento biennale del preposto è
+//                  gestito dalla skill dedicata kitformasubito-preposto-aggiornamento,
+//                  quindi NON va descritto nel Progetto Formativo del corso base);
 //                  AGGIORNAMENTO → periodicità e modalità di erogazione (ASR Parte III §1.2 + Parte IV §6.3).
 function blocco61(isBase) {
   if (isBase) {
-    return [
-      titoloSezione('6.1 AGGIORNAMENTO'),
-      new Paragraph({ alignment: AlignmentType.JUSTIFIED,
-        children: [new TextRun({ text: 'Durata: 6 ore ogni 2 anni (Accordo Stato-Regioni 17/04/2025, Parte III).',
-          font: FONT, size: 20, bold: true, color: C.ROSSO })] }),
-      vuoto(10),
-      para('Modalità: colloquio individuale o test scritto a risposta multipla.'),
-      vuoto(10),
-      para('Contenuti:'),
-      para('• aggiornamento sui rischi specifici', { spacing: { before: 4, after: 4 } }),
-      para('• nuove normative', { spacing: { before: 4, after: 4 } }),
-      para('• cambiamenti organizzativi/produttivi.', { spacing: { before: 4, after: 4 } }),
-    ];
+    // Corso BASE: l'aggiornamento è fuori scope di questa skill -> nessuna sezione §6.1.
+    return [];
   }
   return [
     titoloSezione('6.1 PERIODICITÀ E MODALITÀ DI EROGAZIONE'),
